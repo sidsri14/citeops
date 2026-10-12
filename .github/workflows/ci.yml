@@ -51,4 +51,4 @@ jobs:
           echo "$response" | grep '"apertus_used":false'
           echo "$response" | grep '"evidence_ids"'
       - if: always()
-        run: docker logs citeops
+        run: docker logs citeops 2>/dev/null || true
