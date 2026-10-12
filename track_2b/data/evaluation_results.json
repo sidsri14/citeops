@@ -1,0 +1,8 @@
+{
+  "generated_at": "2026-10-12T11:16:30.725Z",
+  "model": "swiss-ai/apertus-v1.5-8b",
+  "endpoint_origin": "https://api.publicai.co",
+  "cases": 5,
+  "schema_and_citation_passes": 5,
+  "schema_and_citation_pass_rate": 1
+}

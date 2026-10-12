@@ -97,14 +97,15 @@ npm run check
 npm audit
 ```
 
-Run a real, non-fixture evaluation only after configuring Apertus:
+Run a real, non-fixture evaluation only after configuring Apertus. For local
+development, the command also loads an ignored `.env.local` file when present:
 
 ```bash
 npm run evaluate
 ```
 
 Evaluation output uses exclusive file creation so an earlier run is not
-silently overwritten. Remove the ignored generated files deliberately before a
+silently overwritten. Remove the generated result files deliberately before a
 new run.
 
 ## Sovereign architecture
@@ -123,8 +124,10 @@ and [the technical report](technical_report.md).
   prompt-injection, transport, singleflight, host, origin, and size controls.
 - GitHub Actions builds and smoke-tests the Docker path because Docker is not
   installed on the development workstation.
-- Real Apertus evaluation results are published only after a hosted or local
-  Apertus call succeeds. Fixture output is not model evidence.
+- A real Public AI run using `swiss-ai/apertus-v1.5-8b` passed the strict schema
+  and citation gate on 5/5 synthetic cases. The captured responses and
+  aggregate result are in `data/model_responses.json` and
+  `data/evaluation_results.json`; fixture output is not model evidence.
 
 ## License
 

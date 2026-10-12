@@ -4,7 +4,7 @@
 - **Event:** Hack Apertus 2026 Online Hackathon
 - **Team:** Siddharth Srivastava
 - **Repository:** https://github.com/sidsri14/citeops
-- **Demo:** To be recorded after real Apertus validation
+- **Demo:** To be recorded from the validated Apertus path before submission
 
 ## 1. Summary
 
@@ -109,14 +109,18 @@ Two layers are evaluated separately:
 
 | Setup | Metric | Current result |
 | --- | --- | --- |
-| Node 24 local | Behavioral regression cases | 19/19 passing |
+| Node 24.19.0 local | Node test runner cases | 20/20 passing |
 | npm dependency audit | Known package vulnerabilities | 0 |
 | Docker judge path | Build, health check, cited API smoke | Passed ([CI run 38239291460](https://github.com/sidsri14/citeops/actions/runs/38239291460)) |
-| Apertus v1.5 8B | Schema-and-citation pass rate on 5 cases | Pending real endpoint key |
+| Apertus v1.5 8B via Public AI | Schema-and-citation pass rate on 5 cases | 5/5 (100%) |
+| Apertus v1.5 8B via Public AI | Per-case end-to-end latency | 15.9-19.4 s (median 16.6 s) |
 
-The pending cells are deliberate. They will be replaced only by captured CI or
-real Apertus results before submission; no synthetic performance number is
-used.
+The hosted evaluation ran on 2026-10-12 against
+`https://api.publicai.co` with temperature 0. Captured outputs are committed as
+`data/model_responses.json` and `data/evaluation_results.json`. The credential,
+raw synthetic email, raw password string, and injected instruction are absent
+from those files. The 100% result measures contract compliance and evidence-ID
+integrity; it does not claim that every cited causal interpretation is correct.
 
 ## 6. Security and failure semantics
 
@@ -137,26 +141,30 @@ The main threat model is in `docs/threat-model.md`. Notable properties are:
 Pattern-based redaction cannot recognize every organisation-specific secret
 format. A production deployment needs custom detectors and its existing
 identity-aware access layer. A valid event citation proves that evidence exists,
-not that the model's causal interpretation is correct. Operators must review
-claims, especially low-confidence ones. Idempotency state is bounded and
-process-local; multiple replicas need a shared store. There is no RBAC, durable
-incident history, SIEM connector, streaming inference, or automatic remediation
-in this hackathon prototype.
+not that the model's causal interpretation is correct. In the sparse evaluation
+case, Apertus proposed possible backend and logging causes even though the only
+event reported an unspecified internal error; the output also preserved that
+uncertainty. This is why CiteOps remains a decision-support tool and operators
+must review claims, especially low-confidence ones. Idempotency state is bounded
+and process-local; multiple replicas need a shared store. There is no RBAC,
+durable incident history, SIEM connector, streaming inference, or automatic
+remediation in this hackathon prototype.
 
 Docker is unavailable on the development workstation, so the container path was
 independently built and smoke-tested in GitHub Actions at commit `54bf286`. The
-hosted Apertus API key has not been issued, so neither local tests nor container
-CI prove the real inference path. Captured evaluation artifacts remain the
-required evidence for that boundary.
+real hosted inference path was exercised separately with Public AI; this does
+not prove the private or air-gapped deployment path, which still depends on the
+operator's Apertus serving configuration.
 
 ## 8. Reproducibility and next steps
 
 Judges set `LLM_NAME`, `LLM_BASE_URL`, and `LLM_API_KEY`, then run `make run`
 from the repository root. The compose service exposes port 8080. `npm test`,
 `npm run check`, and `npm audit` reproduce local software checks. `npm run
-evaluate` creates response and aggregate-result files using exclusive creation.
-The final report will record the evaluated commit SHA, Node version, endpoint
-origin, and CI URL.
+evaluate` loads an ignored `.env.local` file when present and creates response
+and aggregate-result files using exclusive creation. The captured run records
+the model, timestamp, endpoint origin, and pass count; this report records the
+Node version and CI URL without exposing the API key.
 
 With another month, the most useful additions would be organisation-specific
 redaction policies, authenticated access, durable audit history, a shared

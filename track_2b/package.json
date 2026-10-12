@@ -11,7 +11,7 @@
     "start": "node src/server.mjs",
     "test": "node --test",
     "check": "node scripts/check.mjs",
-    "evaluate": "node src/evaluate.mjs"
+    "evaluate": "node --env-file-if-exists=.env.local src/evaluate.mjs"
   },
   "license": "Apache-2.0"
 }
