@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CiteOps turns operational logs into evidence-gated incident briefs with Apertus.">
+    <title>CiteOps - evidence before action</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="shell nav">
+      <a class="brand" href="/" aria-label="CiteOps home"><span class="brand-mark">C</span>CiteOps</a>
+      <span class="track">Hack Apertus / Track 2B</span>
+    </header>
+
+    <main class="shell">
+      <section class="hero">
+        <p class="eyebrow">Sovereign incident intelligence</p>
+        <h1>Evidence before action.</h1>
+        <p class="lede">Apertus drafts an incident brief. CiteOps checks every hypothesis and action against the log evidence before an operator sees it.</p>
+        <div class="proof-row" role="list" aria-label="Safety controls">
+          <span role="listitem">Local redaction</span><span role="listitem">Strict JSON</span><span role="listitem">Citation gate</span><span role="listitem">Private endpoint ready</span>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="Incident brief workspace">
+        <div class="panel input-panel">
+          <div class="panel-heading">
+            <div><p class="step">01 / Evidence</p><h2>Incident events</h2></div>
+            <button id="load-sample" class="button ghost" type="button">Reset sample</button>
+          </div>
+          <label for="incident-json">JSON log bundle</label>
+          <textarea id="incident-json" spellcheck="false" aria-describedby="input-help"></textarea>
+          <p id="input-help" class="hint">Messages are redacted locally before inference. Event IDs stay unchanged for citation checks.</p>
+          <button id="generate" class="button primary" type="button">Generate verified brief</button>
+        </div>
+
+        <div class="panel output-panel" aria-live="polite">
+          <div class="panel-heading">
+            <div><p class="step">02 / Verified output</p><h2>Incident brief</h2></div>
+            <span id="mode-badge" class="badge neutral">Waiting</span>
+          </div>
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon">C</div>
+            <p>Generate a brief to see cited hypotheses, safe actions, and explicit unknowns.</p>
+          </div>
+          <div id="result" class="result" hidden></div>
+          <div id="error" class="error" role="alert" hidden></div>
+        </div>
+      </section>
+
+      <section class="flow" aria-labelledby="flow-title">
+        <p class="eyebrow">Deterministic guardrails</p>
+        <h2 id="flow-title">The model proposes. The gateway verifies.</h2>
+        <ol>
+          <li><strong>Redact</strong><span>Credentials and personal identifiers never enter the prompt.</span></li>
+          <li><strong>Analyze</strong><span>Apertus turns bounded log events into a structured incident hypothesis.</span></li>
+          <li><strong>Validate</strong><span>Unknown event IDs, uncited actions, and extra fields fail closed.</span></li>
+        </ol>
+      </section>
+    </main>
+    <footer class="shell">Open source / Apache-2.0 / Built for Hack Apertus 2026</footer>
+  </body>
+</html>

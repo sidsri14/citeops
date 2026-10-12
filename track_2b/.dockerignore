@@ -1,0 +1,8 @@
+.git
+.env
+coverage
+data/model_responses.json
+data/evaluation_results.json
+test
+technical_report.pdf
+*_Report.pdf

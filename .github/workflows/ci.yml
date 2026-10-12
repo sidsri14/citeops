@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [22, 24]
+    defaults:
+      run:
+        working-directory: track_2b
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: track_2b/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - run: npm test
+      - run: npm audit --omit=dev
+
+  container-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t citeops:test track_2b
+      - run: docker run -d --name citeops -p 8080:8080 -e CITEOPS_FIXTURE_MODE=1 citeops:test
+      - name: Wait for health
+        run: |
+          for attempt in {1..20}; do
+            if curl --fail --silent http://127.0.0.1:8080/health; then exit 0; fi
+            sleep 1
+          done
+          docker logs citeops
+          exit 1
+      - name: Exercise citation-gated API
+        run: |
+          response=$(curl --fail --silent http://127.0.0.1:8080/api/briefs \
+            -H 'content-type: application/json' \
+            --data-binary @track_2b/data/ci_incident.json)
+          echo "$response" | grep '"apertus_used":false'
+          echo "$response" | grep '"evidence_ids"'
+      - if: always()
+        run: docker logs citeops

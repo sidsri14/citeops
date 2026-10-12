@@ -1,60 +1,48 @@
-# Hack Apertus — project template
+# CiteOps
 
-Template repository for [Hack Apertus](https://hackapertus.ch/) submissions.
-Every project keeps almost the same layout, so organizers and judges find the
-same things in the same place.
+CiteOps turns untrusted operational logs into evidence-gated incident briefs
+with Apertus. Every hypothesis and recommended action must cite event IDs that
+exist in the submitted log bundle; uncited or invented evidence is rejected
+before a response reaches the operator.
 
-## Select your track
+This is a new submission for **Hack Apertus Track 2B**. The project code and
+submission material live in [`track_2b/`](track_2b/README.md), as required by
+the official template.
 
-This repository holds one example project per track:
+## Judge quickstart
 
-- `track_1a/`
-- `track_1b/`
-- `track_2a/`
-- `track_2b/`
-
-Keep the directory for the track you are competing in **exactly as it is** —
-don't rename it or move its files — and delete the other track directories.
-That directory is your project root. Keep the files and directories as shown
-below.
-
-## The structure
-
-| Path | What it is |
-| --- | --- |
-| `README.md` | The challenge description and submission requirements for your track |
-| `technical_report.md` | The deeper write-up: architecture, evaluation, limitations |
-| `Makefile` | `make run` must spin up your project |
-| `src/` | Your code |
-| `data/` | Datasets — `track_1a`, `track_2a` and `track_2b` only; max. 100 MB |
-| `findings/` | Issue files — `track_1a` only |
-| `docs/` | Diagrams, notes, longer write-ups |
-
-## Run it
-
-Judges run `make run` from the root of the project, on a clean checkout:
+Set the three official model variables, then run the project from this
+repository root:
 
 ```bash
+export LLM_NAME=swiss-ai/apertus-v1.5-8b
+export LLM_BASE_URL=https://api.publicai.co/v1
+export LLM_API_KEY=replace-me
 make run
 ```
 
-`make run` is expected to run the project using Docker, since that
-is how the judges will run it.
-- If you used other local open-weight models, include instructions for running the project in your technical report.
-- Use the following environment variables:
-```
-LLM_NAME — name and version of the model
-LLM_BASE_URL — endpoint base URL
-LLM_API_KEY — your API key
+Open <http://localhost:8080>. The same container can target a private
+OpenAI-compatible Apertus endpoint on an on-premise or air-gapped network.
+
+For a clearly labeled UI-only preview without model inference:
+
+```bash
+CITEOPS_FIXTURE_MODE=1 make run
 ```
 
-## Getting started
+Fixture mode is not an Apertus evaluation result and is never enabled by
+default.
 
-1. Click **Use this template** to create your own repository.
-2. Delete the other track directories. Don't rename or restructure yours.
-3. Read its `README.md` and fill in `technical_report.md`.
-4. Make `make run` work from the root of the project, on a clean checkout.
+## Repository map
+
+- `track_2b/src/`: application, validation, redaction, and model adapter
+- `track_2b/public/`: operator interface
+- `track_2b/data/`: synthetic evaluation cases
+- `track_2b/docs/`: architecture and threat model
+- `track_2b/test/`: regression and HTTP integration tests
+- `track_2b/technical_report.md`: submission report source
 
 ## License
 
-All Hack Apertus projects are open-sourced. Please check our Terms & Conditions for specific licensing details (6. What you build is open source): https://hackapertus.ch/terms-and-conditions
+Apache-2.0 for the software. The technical report is CC-BY-4.0 as required by
+the template.

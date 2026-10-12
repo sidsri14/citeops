@@ -1,0 +1,12 @@
+{
+  "request_id": "ci-smoke-001",
+  "service": "checkout-api",
+  "events": [
+    {
+      "id": "evt-ci-1",
+      "timestamp": "2026-10-12T09:31:09Z",
+      "level": "error",
+      "message": "POST /checkout returned 502 after upstream timeout."
+    }
+  ]
+}

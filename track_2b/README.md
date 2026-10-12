@@ -1,103 +1,131 @@
-# Track 2 B: Own Project
+# CiteOps - evidence-gated incident briefs with Apertus
 
-Bring your own idea and build a working Apertus prototype that tackles a problem you care about — any domain, any use case. The project must be new, started within the hackathon period.
+CiteOps is a sovereign incident-analysis gateway for operators who need useful
+LLM assistance without accepting uncited claims. It sends a bounded, locally
+redacted event bundle to Apertus, accepts only a strict JSON brief, and rejects
+every hypothesis or action that does not cite a real input event ID.
 
-Submissions must use the Apertus model family.
-For Track 2 this means that submitted solutions must be built with Apertus. Other open-weights models can be used to support development, e.g. as automatic judges during evaluation. Their role must be clearly described in the submission report.
+**Track:** Hack Apertus 2026, Track 2B (Own Project)
 
-💬 In case you have questions, join the conversation on [Discord](https://discord.gg/hack-apertus) or send an email to “hello@hackapertus.ch”
+## Why this exists
 
----
+Raw incident logs mix useful evidence with secrets, personal identifiers, and
+sometimes attacker-controlled strings. A generic chat completion can repeat a
+secret, obey an instruction embedded in a log line, or invent a plausible root
+cause. CiteOps puts deterministic controls around the model:
 
-## 🔧 Resources & Tools
+1. Validate a maximum of 50 events and 20,000 message characters.
+2. Redact bearer tokens, common API keys, credential assignments, and emails.
+3. Tell Apertus that log messages are untrusted data.
+4. Require a six-field response contract.
+5. Reject unknown citations, uncited actions, uncited hypotheses, and extra fields.
 
-Check our resources & tools page for detailed information:
-https://hackapertus.notion.site/resources-tools
+The model performs the semantic task. Code owns authorization, bounds, privacy,
+and evidence integrity.
 
-| Models           | URL                                      |
-|------------------|------------------------------------------|
-| Apertus v1.5 8B  | [huggingface.co/swiss-ai/Apertus-v1.5-8B](https://huggingface.co/swiss-ai/Apertus-v1.5-8B)  |
-| Apertus v1.5 70B | [huggingface.co/swiss-ai/Apertus-v1.5-70B](https://huggingface.co/swiss-ai/Apertus-v1.5-70B) |
+## Run with Docker
 
+The official judge path starts at the repository root:
 
-## Target architecture (mandatory)
+```bash
+export LLM_NAME=swiss-ai/apertus-v1.5-8b
+export LLM_BASE_URL=https://api.publicai.co/v1
+export LLM_API_KEY=replace-me
+make run
+```
 
-Whatever you build in Track 2B must be deployable in one of these three architectures:
+Then open <http://localhost:8080>.
 
-- **a) On-premise** — on the organisation's own infrastructure, under its own administration.
-- **b) Air-gapped** — with no external network connection at runtime.
-- **c) Sovereign Swiss cloud** — on a cloud platform operated in Switzerland, under Swiss jurisdiction, with Swiss data residency.
+For an on-premise or air-gapped deployment, point `LLM_BASE_URL` at a private
+OpenAI-compatible Apertus server such as `http://vllm:8000/v1`. Plain HTTP is
+accepted only for loopback, private IPs, and local/internal hostnames; all other
+model endpoints require HTTPS.
 
----
+### UI-only preview
 
-## Data
+```bash
+CITEOPS_FIXTURE_MODE=1 make run
+```
 
-The `data/` directory must not exceed 100 MB.
+The interface visibly labels this as **Fixture preview**, sets
+`apertus_used: false`, and never includes it in `npm run evaluate`.
 
----
+## API
 
-## 📦 Submission Requirements & Deliverables
+```bash
+curl -sS http://localhost:8080/api/briefs \
+  -H 'content-type: application/json' \
+  -d '{
+    "request_id": "incident-001",
+    "service": "checkout-api",
+    "events": [
+      {
+        "id": "evt-1",
+        "timestamp": "2026-10-12T09:31:09Z",
+        "level": "error",
+        "message": "POST /checkout returned 502 after upstream timeout"
+      }
+    ]
+  }'
+```
 
-❗️ Submissions are not handled on Devpost but via this URL only:
-http://hackapertus.ch/online-hack/submissions
+The returned `brief.hypotheses[*].evidence_ids` and
+`brief.actions[*].evidence_ids` are guaranteed to refer to event IDs in this
+request. If the model violates the contract, CiteOps returns a 502 rather than
+silently repairing or displaying an unsupported answer.
 
-The submission must: 
-1. follow the template repo and include all prerequisite files and definitions
-2. follow the specified input/output formats
-3. run in a Docker container, launched with `make run` from the root of the project
-4. run end-to-end when judges try to run it
+## Environment
 
-### Git repo (URL)
-- Create your repo from this template (**Use this template**) and work in the `track_2b/` challenge directory. Delete the other track challenge directories.
-- Keep `track_2b/` as it is: don't rename it or move its files.
-- Set the repo to PUBLIC (Settings --> Collaborators --> Manage Visibility)
-- Submit the URL of YOUR Git repo.
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `LLM_NAME` | Exact Apertus model identifier | `swiss-ai/apertus-v1.5-8b` |
+| `LLM_BASE_URL` | OpenAI-compatible endpoint base | local port 8000 |
+| `LLM_API_KEY` | Endpoint credential | none |
+| `LLM_TIMEOUT_MS` | Inference deadline | `45000` |
+| `CITEOPS_FIXTURE_MODE` | Labeled interface preview without inference | `0` |
+| `CITEOPS_ALLOWED_HOSTS` | Additional accepted HTTP Host values | local only |
 
-### Technical Report (pdf)
-- Update [technical_report.md](technical_report.md) in this repository with all the details for your submission.
-- Upload a pdf of your technical report to this directory, named as `TeamName_Report.pdf`.
-- Format: pdf, max. 6 pages w/o references
-- Submit the pdf of the technical report.
+## Develop and test
 
-### Demo video (URL)
-- Max. 2 min demo video of your prototype
+Node.js 22 or newer is required. The application has zero runtime npm
+dependencies.
 
-### Dataset (URL) - optional, depending on your project
-Submitted datasets must comply with our guidelines for responsibly sourced datasets.
+```bash
+npm install
+npm test
+npm run check
+npm audit
+```
 
-- Create a user account on Hugging Face
-- Clone our dataset template on Hugging Face: https://huggingface.co/datasets/HackApertus/online_hack_template
-- Complete the dataset card with all required information
-- Upload your dataset. It should consist of the following components:
-    - evaluation dataset (i.e. individual test cases)
-    - model response dataset (i.e. the model response to each test case)
-    - metadata file (i.e. additional information about each test case; where relevant, this file must contain instance-level licensing information) 
-- Make sure your dataset access control is set to PUBLIC
-- Provide the URL of _your_ data set
+Run a real, non-fixture evaluation only after configuring Apertus:
 
+```bash
+npm run evaluate
+```
 
----
+Evaluation output uses exclusive file creation so an earlier run is not
+silently overwritten. Remove the ignored generated files deliberately before a
+new run.
 
-## ⚖️ Judging Criteria
+## Sovereign architecture
 
-1. Purposeful use of AI
-2. Technical rigour
-3. Value, cost & scalability
-4. Sovereign deployability
-5. Implementation feasibility
+The application container, model endpoint, and logs can all stay on an
+organisation's own network. Runtime has no analytics, CDN, font, telemetry, or
+package-service dependency. The container runs as the unprivileged `node` user,
+with a read-only filesystem, dropped Linux capabilities, and no-new-privileges.
 
-Judges use a Scale 0–5 per dimension.
+See [the architecture](docs/architecture.md), [the threat model](docs/threat-model.md),
+and [the technical report](technical_report.md).
 
----
+## Current evidence boundary
 
-## Support
+- Unit and HTTP integration tests exercise schema, citation, redaction,
+  prompt-injection, transport, singleflight, host, origin, and size controls.
+- GitHub Actions builds and smoke-tests the Docker path because Docker is not
+  installed on the development workstation.
+- Real Apertus evaluation results are published only after a hosted or local
+  Apertus call succeeds. Fixture output is not model evidence.
 
-**Licensing requirements**
-Please check our Terms & Conditions (6. What you build is open source):
-https://hackapertus.ch/terms-and-conditions
+## License
 
-## FAQ
-💡 https://hackapertus.ch/faq
-
-## Contact
-💬 In case you have questions, join the conversation on Discord or send an email to “hello@hackapertus.ch”
+Apache-2.0. The technical report is CC-BY-4.0.

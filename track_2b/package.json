@@ -1,0 +1,17 @@
+{
+  "name": "citeops",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-gated Apertus incident briefs for Hack Apertus Track 2B",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test": "node --test",
+    "check": "node scripts/check.mjs",
+    "evaluate": "node src/evaluate.mjs"
+  },
+  "license": "Apache-2.0"
+}
