@@ -111,7 +111,7 @@ Two layers are evaluated separately:
 | --- | --- | --- |
 | Node 24 local | Behavioral regression cases | 19/19 passing |
 | npm dependency audit | Known package vulnerabilities | 0 |
-| Docker judge path | GitHub Actions build and smoke test | Pending first CI run |
+| Docker judge path | Build, health check, cited API smoke | Passed ([CI run 38239291460](https://github.com/sidsri14/citeops/actions/runs/38239291460)) |
 | Apertus v1.5 8B | Schema-and-citation pass rate on 5 cases | Pending real endpoint key |
 
 The pending cells are deliberate. They will be replaced only by captured CI or
@@ -143,19 +143,20 @@ process-local; multiple replicas need a shared store. There is no RBAC, durable
 incident history, SIEM connector, streaming inference, or automatic remediation
 in this hackathon prototype.
 
-At the time of this draft, Docker is unavailable on the development workstation
-and the hosted Apertus API key has not been issued. Local Node tests therefore
-do not prove the Docker or real inference paths; GitHub Actions and the captured
-evaluation artifacts are the planned independent evidence.
+Docker is unavailable on the development workstation, so the container path was
+independently built and smoke-tested in GitHub Actions at commit `54bf286`. The
+hosted Apertus API key has not been issued, so neither local tests nor container
+CI prove the real inference path. Captured evaluation artifacts remain the
+required evidence for that boundary.
 
 ## 8. Reproducibility and next steps
 
 Judges set `LLM_NAME`, `LLM_BASE_URL`, and `LLM_API_KEY`, then run `make run`
 from the repository root. The compose service exposes port 8080. `npm test`,
 `npm run check`, and `npm audit` reproduce local software checks. `npm run
-evaluate` creates ignored response and aggregate-result files using exclusive
-creation. The final report will record the evaluated commit SHA, Node version,
-endpoint origin, and CI URL.
+evaluate` creates response and aggregate-result files using exclusive creation.
+The final report will record the evaluated commit SHA, Node version, endpoint
+origin, and CI URL.
 
 With another month, the most useful additions would be organisation-specific
 redaction policies, authenticated access, durable audit history, a shared
