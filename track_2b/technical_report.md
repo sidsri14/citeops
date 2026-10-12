@@ -4,7 +4,7 @@
 - **Event:** Hack Apertus 2026 Online Hackathon
 - **Team:** Siddharth Srivastava
 - **Repository:** https://github.com/sidsri14/citeops
-- **Demo:** To be recorded from the validated Apertus path before submission
+- **Demo:** `output/video/CiteOps_HackApertus_Demo.mp4` (54-second narrated walkthrough)
 
 ## 1. Summary
 

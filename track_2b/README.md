@@ -7,6 +7,10 @@ every hypothesis or action that does not cite a real input event ID.
 
 **Track:** Hack Apertus 2026, Track 2B (Own Project)
 
+**Demo:** [54-second narrated walkthrough](output/video/CiteOps_HackApertus_Demo.mp4)
+
+**Technical report:** [five-page PDF](output/pdf/SiddharthSrivastava_Report.pdf)
+
 ## Why this exists
 
 Raw incident logs mix useful evidence with secrets, personal identifiers, and
