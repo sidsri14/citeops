@@ -33,6 +33,19 @@ CITEOPS_FIXTURE_MODE=1 make run
 Fixture mode is not an Apertus evaluation result and is never enabled by
 default.
 
+## Verified evidence
+
+- [54-second narrated walkthrough](track_2b/output/video/CiteOps_HackApertus_Demo.mp4)
+- [Five-page technical report](track_2b/output/pdf/SiddharthSrivastava_Report.pdf)
+- [Captured evaluation results](track_2b/data/evaluation_results.json) from a
+  real `swiss-ai/apertus-v1.5-8b` run: 5/5 synthetic cases passed the strict
+  schema-and-citation gate
+- 20/20 automated tests plus Node 22/24 and Docker CI
+
+The 5/5 result measures schema and evidence-ID compliance, not causal accuracy.
+Hosted inference was used for that evaluation; the private/on-premise serving
+path remains a deployment target rather than a demonstrated result.
+
 ## Repository map
 
 - `track_2b/src/`: application, validation, redaction, and model adapter
